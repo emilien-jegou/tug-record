@@ -1,0 +1,22 @@
+[package]
+name = "tug-stats"
+version = "0.0.1"
+description = "Git-like file status output"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/arxanas/tug-record"
+
+[dependencies]
+imara-diff = "0.2"
+clap = { version = "4.4", features = ["derive"] }
+ignore = "0.4"
+anyhow = "1.0"
+eyre = "0.6.12"
+color-eyre = "0.6.5"
+log = "0.4"
+env_logger = "0.10"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+colored = "2.0"
+terminal_size = "0.3"
+rayon = "1.8"

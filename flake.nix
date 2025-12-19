@@ -27,39 +27,52 @@
           cargo = buildToolchain;
           rustc = buildToolchain;
         };
+
+        commonBuildArgs = {
+          src = pkgs.lib.cleanSource ./.;
+          cargoLock = {
+            lockFile = ./Cargo.lock;
+          };
+          nativeBuildInputs = [ pkgs.pkg-config pkgs.makeWrapper ];
+          buildInputs = [ pkgs.openssl pkgs.wmctrl ];
+          doCheck = false;
+        };
+
       in {
         packages = {
-          tug-record = rustPlatform.buildRustPackage {
+          tug-record = rustPlatform.buildRustPackage (commonBuildArgs // {
             pname = "tug-record";
             version = "0.1.0";
-
-            src = pkgs.lib.cleanSource ./.;
-
-            cargoLock = {
-              lockFile = ./Cargo.lock;
-            };
-
-            nativeBuildInputs = [ pkgs.pkg-config pkgs.makeWrapper ];
-            buildInputs = [ pkgs.openssl pkgs.wmctrl ];
-
-            doCheck = false;
 
             postInstall = ''
               wrapProgram $out/bin/tug-diff-editor \
                 --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.wmctrl ]}
             '';
-          };
+          });
 
-          default = self.packages.${system}.tug-record;
+          tug-stats = rustPlatform.buildRustPackage (commonBuildArgs // {
+            pname = "tug-stats";
+            version = "0.1.0";
+            buildAndTestSubdir = "tug-stats";
+          });
+
+          default = pkgs.symlinkJoin {
+            name = "tug-workspace";
+            paths = [
+              self.packages.${system}.tug-record
+              self.packages.${system}.tug-stats
+            ];
+          };
         };
 
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
-            devToolchain # Uses the heavy toolchain only in dev
+            devToolchain
             openssl
             pkg-config
             wmctrl
             bacon
+            jujutsu
           ];
 
           shellHook = ''

@@ -1,3 +1,3 @@
 [workspace]
 resolver = "2"
-members = ["tug-diff-editor", "tug-record"]
+members = ["tug-diff-editor", "tug-record", "tug-stats"]
